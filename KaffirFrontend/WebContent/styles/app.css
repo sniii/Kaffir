@@ -1,0 +1,25 @@
+.content {
+    font-family: "Century Gothic";
+}
+
+.ng-invalid.ng-dirty {
+	border-color: #d9534f;
+}
+
+.ng-valid.ng-dirty {
+	border-color: #5cb85c;
+}
+
+.form-control {
+	margin-bottom: 5px;
+}
+
+.shopping-list .suggest {
+    font-family: "Century Gothic";
+}
+
+.shopping-list .item {
+    font-size: 30px;
+    font-style: italic;
+    font-family: "Century Gothic";
+}

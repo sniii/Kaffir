@@ -1,0 +1,18 @@
+{
+    "items": [{
+        "name": "Durian",
+        "category": "Frugt"
+    },{
+        "name": "Coca Cola",
+        "category": "Sodavand"
+    },{
+        "name": "Playstation 4",
+        "category": "Elektronik"
+    },{
+        "name": "Æbler",
+        "category": "Frugt"
+    },{
+        "name": "Kaffir Lime",
+        "category": "Frugt"
+    }]
+}

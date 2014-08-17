@@ -1,0 +1,11 @@
+{
+    "shoppingLists": [{
+        "id": "1",
+        "username": "Kimia",
+        "userID": "kimiafrost@gmail.com"
+    }, {
+        "id": "2",
+        "username": "Morten",
+        "userID": "mortenfb@gmail.com"
+    }]
+}

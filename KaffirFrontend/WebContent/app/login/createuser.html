@@ -1,0 +1,13 @@
+<h2>Opret bruger</h2>
+<form name="userForm" ng-submit="userForm.$valid && user.create()" ng-controller="CreateUserController as user" novalidate>
+    <fieldset class="input-append">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" ng-model="user.email" required>
+        <label for="username">Username</label>
+        <input type="text" id="username" class="form-control" ng-model="user.username" required>
+        <button type="submit" class="form-control btn btn-primary">Opret</button>
+        <div class="alert alert-danger" role="alert" ng-show="user.error != null">
+            Der er allerede oprettet en bruger med emailen {{user.email}}.
+        </div>
+    </fieldset>
+</form>
