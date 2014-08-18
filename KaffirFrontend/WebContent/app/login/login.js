@@ -10,7 +10,7 @@ controller('LoginController', ['$http', '$location', 'User', function ($http, $l
     		email: email,
     		password: ''
     	}
-    	$http.post('/KaffirBackend/login', loginCredentials).success(function(data) {
+    	$http.post('/KaffirPseudoBackend/login', loginCredentials).success(function(data) {
     		if (data.status === "Ok") {
     			User.email = data.user.email;
     			User.username = data.user.username;

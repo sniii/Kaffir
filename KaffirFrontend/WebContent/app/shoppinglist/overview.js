@@ -8,7 +8,7 @@ controller('ShoppingListOverviewController', ['$http', '$location', 'ShoppingLis
 
     this.loadLists = function() {
         var self = this;
-        $http.get('/KaffirBackend/shoppinglist/lists', {
+        $http.get('/KaffirPseudoBackend/shoppinglist/lists', {
         	params: { userID: User.email }
         }).success(function(data) {
             self.lists = ShoppingListModel.lists = data;
@@ -16,7 +16,7 @@ controller('ShoppingListOverviewController', ['$http', '$location', 'ShoppingLis
     };
 
     this.select = function(shoppinglist) {
-        $http.get('/KaffirBackend/shoppinglist/list/' + shoppinglist.id, {
+        $http.get('/KaffirPseudoBackend/shoppinglist/list/' + shoppinglist.id, {
         	params: { userID: User.email }
         }).success(function(data) {
             ShoppingListModel.activeList.id = data.id;
