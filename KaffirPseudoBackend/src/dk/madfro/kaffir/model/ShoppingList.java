@@ -1,5 +1,6 @@
 package dk.madfro.kaffir.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,7 +10,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class ShoppingList {
+public class ShoppingList implements Serializable {
+	private static final long serialVersionUID = 1L;
 	@XmlElement(name="items")
 	private List<Item> items = new ArrayList<Item>();
 	private String id;

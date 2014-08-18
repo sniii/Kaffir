@@ -1,12 +1,14 @@
 package dk.madfro.kaffir.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Item {
+public class Item implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String category;
 	private String id;
