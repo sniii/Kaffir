@@ -12,9 +12,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import dk.madfro.kaffir.app.ShoppingListFacade;
 import dk.madfro.kaffir.model.Item;
 import dk.madfro.kaffir.model.ShoppingList;
-import dk.madfro.kaffir.model.ShoppingListFacade;
 
 @Path("shoppinglist")
 public class ShoppingListService {

@@ -1,42 +1,59 @@
 package dk.madfro.kaffir;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import dk.madfro.kaffir.app.ShoppingListAPI;
+import dk.madfro.kaffir.app.ShoppingListFacade;
+import dk.madfro.kaffir.app.UsernameAlreadyExistsException;
 import dk.madfro.kaffir.model.User;
-import dk.madfro.kaffir.model.ShoppingListFacade;
 
-@Path("login")
+@Path("/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class LoginService {
 	public enum LoginStatus {
-		Ok, UserNotFound
+		Ok, UserNotFound, UserAlreadyExists
 	}
 	
+	
 	@POST
-	@Produces("application/json")
-	@Consumes(MediaType.APPLICATION_JSON)
-    public LoginResponse login(LoginAttempt login) {
-    	System.out.println("User (" + login.email + ") logged in.");
-    	ShoppingListFacade application = ShoppingListFacade.instance();
-    	LoginResponse loginResponse = new LoginResponse();
-    	if (application.userExists(login.email)) {
-    		loginResponse.user = application.getUser(login.email);
-    		loginResponse.status = LoginStatus.Ok;
+	@Path("login")
+    public LoginResponse login(UserData user) {
+    	ShoppingListAPI application = ShoppingListFacade.instance();
+    	LoginResponse response = new LoginResponse();
+    	if (application.userExists(user.email)) {
+    		response.user = application.getUser(user.email);
+    		response.status = LoginStatus.Ok;
+    		System.out.println("User (" + user.email + ") logged in.");
     	} else {
-    		loginResponse.status = LoginStatus.UserNotFound;
+    		response.status = LoginStatus.UserNotFound;
     	}
-    	return loginResponse;
+    	return response;
     }
 	
+	@POST
+	@Path("createuser")
+	public LoginResponse createUser(UserData user) {
+		ShoppingListAPI application = ShoppingListFacade.instance();
+		LoginResponse response = new LoginResponse();
+		try {
+			response.user = application.createUser(user.email, user.username);
+			response.status = LoginStatus.Ok;
+		} catch (UsernameAlreadyExistsException e) {
+			response.status = LoginStatus.UserAlreadyExists;
+		}
+		return response;
+	}
+	
 	@SuppressWarnings("unused")
-	private static class LoginAttempt {
+	private static class UserData {
 		public String email;
 		public String password;
+		public String username;
 	}
 	
 	@SuppressWarnings("unused")

@@ -1,4 +1,4 @@
-package dk.madfro.kaffir.model;
+package dk.madfro.kaffir.app;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,13 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShoppingListFacade {
-	
+import dk.madfro.kaffir.model.Item;
+import dk.madfro.kaffir.model.ShoppingList;
+import dk.madfro.kaffir.model.User;
+import dk.madfro.kaffir.model.UserDataModel;
+
+public class ShoppingListFacade implements ShoppingListAPI {
 	private static class InstanceHolder {
 		static final ShoppingListFacade instance = new ShoppingListFacade();
 	}
 	
-	public static ShoppingListFacade instance() {
+	public static ShoppingListAPI instance() {
 		return InstanceHolder.instance;
 	}
 	
@@ -29,6 +33,52 @@ public class ShoppingListFacade {
 		load();
 	}
 	
+	@Override
+	public List<ShoppingList> getShoppingLists(String userID) {
+		return getDataForUser(userID).getLists();
+	}
+	
+	@Override
+	public ShoppingList getShoppingListByID(String userID, String listID) {
+		UserDataModel model = getDataForUser(userID);
+		for (ShoppingList list : model.getLists()) {
+			if (list.getId().equalsIgnoreCase(listID)) {
+				return list;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean userExists(String userID) {
+		return database.containsKey(new User("", userID));
+	}
+	
+	@Override
+	public User getUser(String userID) {
+		for (User user : database.keySet()) {
+			if (user.getEmail().equalsIgnoreCase(userID)) {
+				return user;
+			}
+		}
+		return null;
+	}
+	
+	public User createUser(String userID, String username) throws UsernameAlreadyExistsException {
+		if (userExists(userID)) {
+			throw new UsernameAlreadyExistsException();
+		}
+		User user = new User(username, userID);
+		UserDataModel model = new UserDataModel();
+		model.addList(new ShoppingList(user));
+		database.put(user, model);
+		return user;
+	}
+	
+	private UserDataModel getDataForUser(String userID) {
+		return database.get(new User("", userID));
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void load() {
 		File file = new File(databasePath);
@@ -39,12 +89,16 @@ public class ShoppingListFacade {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
 			buildDummyData();
 		}
+		System.out.println("\n\nRegistered users\n");
+		for (User user : database.keySet()) {
+			System.out.println("- " + user.getEmail() + " (" + user.getUsername() + ")");
+		}
+		System.out.println();
 	}
 	
 	public void save() {
@@ -57,48 +111,17 @@ public class ShoppingListFacade {
 		}
 	}
 	
-	public List<ShoppingList> getShoppingLists(String userID) {
-		return getDataForUser(userID).getLists();
-	}
-	
-	public ShoppingList getShoppingListByID(String userID, String listID) {
-		UserDataModel model = getDataForUser(userID);
-		for (ShoppingList list : model.getLists()) {
-			if (list.getId().equalsIgnoreCase(listID)) {
-				return list;
-			}
-		}
-		return null;
-	}
-	
-	public boolean userExists(String userID) {
-		return database.containsKey(new User("", userID));
-	}
-	
-	public User getUser(String userID) {
-		for (User user : database.keySet()) {
-			if (user.getEmail().equalsIgnoreCase(userID)) {
-				return user;
-			}
-		}
-		return null;
-	}
-	
-	private UserDataModel getDataForUser(String userID) {
-		return database.get(new User("", userID));
-	}
-	
 	private void buildDummyData() {
 		database = new HashMap<User, UserDataModel>();
 		
 		User user = new User("Morten", "mortenfb@gmail.com");
 		UserDataModel model = new UserDataModel();
-		ShoppingList shoppinglist = new ShoppingList("Morten", "mortenfb@gmail.com");
+		ShoppingList shoppinglist = new ShoppingList(user);
 		shoppinglist.addItem(new Item("Bananer", "Frugt"));
 		shoppinglist.addItem(new Item("Vandmelon", "Frugt"));
 		shoppinglist.addItem(new Item("Adidas sneakers", "Tøj og sko"));
 		model.addList(shoppinglist);
-		shoppinglist = new ShoppingList("Morten", "mortenfb@gmail.com");
+		shoppinglist = new ShoppingList(user);
 		shoppinglist.addItem(new Item("Item 1", "Lala"));
 		shoppinglist.addItem(new Item("Item 2", "Lulu"));
 		shoppinglist.addItem(new Item("Item 3", "Tøj og sko"));
@@ -107,7 +130,7 @@ public class ShoppingListFacade {
 		
 		user = new User("Kimia", "kimiafrost@gmail.com");
 		model = new UserDataModel();
-		shoppinglist = new ShoppingList("Kimia", "kimiafrost@gmail.com");
+		shoppinglist = new ShoppingList(user);
 		shoppinglist.addItem(new Item("Marlboro Light", "Cigaretter"));
 		shoppinglist.addItem(new Item("Æbler", "Frugt"));
 		model.addList(shoppinglist);
@@ -115,7 +138,7 @@ public class ShoppingListFacade {
 		
 		user = new User("Mads", "mdiget@gmail.com");
 		model = new UserDataModel();
-		shoppinglist = new ShoppingList("Mads", "mdiget@gmail.com");
+		shoppinglist = new ShoppingList(user);
 		shoppinglist.addItem(new Item("Tyggegummi", "Diverse"));
 		shoppinglist.addItem(new Item("Pærer", "Frugt"));
 		shoppinglist.addItem(new Item("Sko", "Tøj og sko"));

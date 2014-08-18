@@ -7,7 +7,7 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import dk.madfro.kaffir.model.ShoppingListFacade;
+import dk.madfro.kaffir.app.ShoppingListFacade;
 
 @ApplicationPath("/*")
 @WebListener
@@ -20,7 +20,7 @@ public class ShoppingListJAXRSApplication extends ResourceConfig implements Serv
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		ShoppingListFacade.instance().save();
+		((ShoppingListFacade)ShoppingListFacade.instance()).save();
 	}
 
 	@Override

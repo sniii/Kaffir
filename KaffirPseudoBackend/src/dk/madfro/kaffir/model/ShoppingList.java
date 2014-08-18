@@ -12,19 +12,18 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class ShoppingList implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
 	@XmlElement(name="items")
 	private List<Item> items = new ArrayList<Item>();
 	private String id;
-	private String username;
-	private String userID;
+	private User user;
 	
 	public ShoppingList() {
 	}
 	
-	public ShoppingList(String username, String userID) {
-		this.username = username;
-		this.userID = userID;
+	public ShoppingList(User user) {
 		this.id = UUID.randomUUID().toString();
+		this.user = user;
 	}
 	
 	public void addItem(Item item) {
@@ -46,20 +45,12 @@ public class ShoppingList implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public String getUsername() {
-		return username;
+	
+	public User getUser() {
+		return user;
 	}
-
-	public void setUsername(String username) {
-		this.username = username;
+	
+	public void setUser(User user) {
+		this.user = user;
 	}
-
-	public String getUserID() {
-		return userID;
-	}
-
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}	
 }
