@@ -1,8 +1,8 @@
 <div ng-controller="ShoppingListOverviewController as overview" ng-init="overview.loadLists()">
     <div class="list-group" ng-repeat="shoppinglist in overview.lists">
         <a href class="list-group-item" ng-click="overview.select(shoppinglist)">
-            <h4 class="list-group-item-heading">{{shoppinglist.username}}'s indkøbsseddel</h4>
-            <p class="list-group-item-text">{{shoppinglist.userID}}</p>
+            <h4 class="list-group-item-heading">{{shoppinglist.user.username}}'s indkøbsseddel</h4>
+            <p class="list-group-item-text">{{shoppinglist.user.email}}</p>
         </a>
     </div>
 </div>

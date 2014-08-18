@@ -1,4 +1,5 @@
 angular.module('kaffir', [
+	'createuser',
 	'login',
 	'shoppinglist',
 	'shoppinglist-overview',
@@ -69,23 +70,4 @@ factory("TypedItemNames", function() {
         }
     };
     return obj;
-}).
-
-controller("CreateUserController", ['$http', '$location', 'UserService', function($http, $location, UserService) {
-    this.error = null;
-    this.email = "";
-    this.username = "";
-
-    this.create = function() {
-        var self = this;
-        $http.get("data/createuser-fail-response.json").success(function(data) {
-            UserService.email = self.email;
-            UserService.username = self.username;
-            if (data.status === "ok") {
-                $location.path("shoppinglist");
-            } else if (data.status = "user-exists") {
-                self.error = "user exists!";
-            }
-        });
-    };
-}]);
+});
