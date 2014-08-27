@@ -13,10 +13,11 @@ import dk.madfro.kaffir.app.ShoppingListFacade;
 @WebListener
 public class ShoppingListJAXRSApplication extends ResourceConfig implements ServletContextListener {
 
-	/*public ShoppingListJAXRSApplication() {
+	public ShoppingListJAXRSApplication() {
 		packages("dk.madfro.kaffir");
-		register(new LoggingFilter(Logger.getLogger(ShoppingListJAXRSApplication.class.getName()), true));
-	}*/
+		//register(new LoggingFilter(Logger.getLogger(ShoppingListJAXRSApplication.class.getName()), true));
+		register(UserFilter.class);
+	}
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {

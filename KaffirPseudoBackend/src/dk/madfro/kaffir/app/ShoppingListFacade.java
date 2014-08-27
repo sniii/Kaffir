@@ -34,13 +34,13 @@ public class ShoppingListFacade implements ShoppingListAPI {
 	}
 	
 	@Override
-	public List<ShoppingList> getShoppingLists(String userID) {
-		return getDataForUser(userID).getLists();
+	public List<ShoppingList> getShoppingLists(User user) {
+		return database.get(user).getLists();
 	}
 	
 	@Override
-	public ShoppingList getShoppingListByID(String userID, String listID) {
-		UserDataModel model = getDataForUser(userID);
+	public ShoppingList getShoppingListByID(User user, String listID) {
+		UserDataModel model = database.get(user);
 		for (ShoppingList list : model.getLists()) {
 			if (list.getId().equalsIgnoreCase(listID)) {
 				return list;

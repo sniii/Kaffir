@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import dk.madfro.kaffir.app.ShoppingListAPI;
 import dk.madfro.kaffir.app.ShoppingListFacade;
 import dk.madfro.kaffir.app.UsernameAlreadyExistsException;
+import dk.madfro.kaffir.model.Token;
 import dk.madfro.kaffir.model.User;
 
 @Path("/")
@@ -19,16 +20,16 @@ public class LoginService {
 		Ok, UserNotFound, UserAlreadyExists
 	}
 	
-	
 	@POST
 	@Path("login")
-    public LoginResponse login(UserData user) {
+    public LoginResponse login(LoginCredentials credentials) {
     	ShoppingListAPI application = ShoppingListFacade.instance();
     	LoginResponse response = new LoginResponse();
-    	if (application.userExists(user.email)) {
-    		response.user = application.getUser(user.email);
-    		response.status = LoginStatus.Ok;
-    		System.out.println("User (" + user.email + ") logged in.");
+    	if (application.userExists(credentials.email)) {
+    		User user = application.getUser(credentials.email);
+    		Token token = UserSession.storeAuthenticatedUser(user);
+    		response = new LoginResponse(LoginStatus.Ok, user, token.getSecretKey());
+    		System.out.println("User (" + credentials.email + ") logged in.");
     	} else {
     		response.status = LoginStatus.UserNotFound;
     	}
@@ -37,12 +38,13 @@ public class LoginService {
 	
 	@POST
 	@Path("createuser")
-	public LoginResponse createUser(UserData user) {
+	public LoginResponse createUser(LoginCredentials user) {
 		ShoppingListAPI application = ShoppingListFacade.instance();
 		LoginResponse response = new LoginResponse();
 		try {
-			response.user = application.createUser(user.email, user.username);
-			response.status = LoginStatus.Ok;
+			User newUser = application.createUser(user.email, user.username);
+			Token token = UserSession.storeAuthenticatedUser(newUser);
+			response = new LoginResponse(LoginStatus.Ok, newUser, token.getSecretKey());
 		} catch (UsernameAlreadyExistsException e) {
 			response.status = LoginStatus.UserAlreadyExists;
 		}
@@ -50,7 +52,7 @@ public class LoginService {
 	}
 	
 	@SuppressWarnings("unused")
-	private static class UserData {
+	private static class LoginCredentials {
 		public String email;
 		public String password;
 		public String username;
@@ -60,13 +62,15 @@ public class LoginService {
 	private static class LoginResponse {
 		public LoginStatus status;
 		public User user;
+		public String token;
 		
 		public LoginResponse() {
 		}
 
-		public LoginResponse(LoginStatus status, User user) {
+		public LoginResponse(LoginStatus status, User user, String token) {
 			this.status = status;
 			this.user = user;
+			this.token = token;
 		}
 	}
 }

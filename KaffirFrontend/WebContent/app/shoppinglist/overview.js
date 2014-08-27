@@ -8,9 +8,7 @@ controller('ShoppingListOverviewController', ['$http', '$location', 'ShoppingLis
 
     this.loadLists = function() {
         var self = this;
-        $http.get('/KaffirPseudoBackend/shoppinglist/lists', {
-        	params: { userID: User.email }
-        }).success(function(data) {
+        $http.get('/KaffirPseudoBackend/shoppinglist/lists').success(function(data) {
             self.lists = ShoppingListModel.lists = data;
         });
     };

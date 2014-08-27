@@ -20,7 +20,7 @@ controller("ShoppingListController", ['$http', 'ShoppingListModel', 'User', func
     this._addItemOnServer = function() {
     	var self = this;
         $http.post("/KaffirPseudoBackend/shoppinglist/list/additem", {
-        	userID: User.email, listID: ShoppingListModel.activeList.id, item: self.newItemName
+        	listID: ShoppingListModel.activeList.id, item: self.newItemName
         }).success(function(data) {
         	self.items.push({name: self.newItemName, category: "?"});
             //TypedItemNames.add(self.newItemName);
@@ -36,7 +36,7 @@ controller("ShoppingListController", ['$http', 'ShoppingListModel', 'User', func
         var item = this.items[itemIndex]; //this.items.splice(item, 1);
         var self = this;
         $http.post("/KaffirPseudoBackend/shoppinglist/list/removeitem", {
-        	userID: User.email, listID: ShoppingListModel.activeList.id, itemID: item.id
+        	listID: ShoppingListModel.activeList.id, itemID: item.id
         }).success(function(data) {
         	self.items.splice(itemIndex, 1);
         });
