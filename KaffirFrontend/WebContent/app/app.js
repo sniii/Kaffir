@@ -1,4 +1,5 @@
 angular.module('kaffir', [
+    'auth',
 	'createuser',
 	'login',
 	'shoppinglist',
@@ -6,14 +7,35 @@ angular.module('kaffir', [
 	'ngRoute'
 ]).
 
-config(['$routeProvider', function ($routeProvider) {
+config(function ($routeProvider, $httpProvider) {
+	$httpProvider.interceptors.push('requestTokenInterceptor');
     $routeProvider.
-        when('/', {templateUrl: 'app/login/login.html', controller: 'LoginController'}).
-        when('/shoppinglist/', {templateUrl: 'app/shoppinglist/shoppinglist.html', controller: 'ShoppingListController'}).
-        when('/shoppinglist-overview/', {templateUrl: 'app/shoppinglist/overview.html', controller: 'ShoppingListOverviewController'}).
-        when('/createuser/', {templateUrl: 'app/login/createuser.html', controller: 'CreateUserController'}).
+        when('/',                       {templateUrl: 'app/login/login.html',               controller: 'LoginController'}).
+        when('/shoppinglist/',          {templateUrl: 'app/shoppinglist/shoppinglist.html', controller: 'ShoppingListController'}).
+        when('/shoppinglist-overview/', {templateUrl: 'app/shoppinglist/overview.html',     controller: 'ShoppingListOverviewController'}).
+        when('/createuser/',            {templateUrl: 'app/login/createuser.html',          controller: 'CreateUserController'}).
         otherwise({redirectTo: '/'});
-}]).
+}).
+
+run(function (kaffirAPI) {
+	kaffirAPI.init();
+}).
+
+factory('requestTokenInterceptor', function($q, $window, $location) {
+	var UNAUTHORIZED = 401;
+	return {
+      'response': function(response) {
+        return response;
+      },
+
+     'responseError': function(rejection) {
+		 if (rejection.status === UNAUTHORIZED) {
+			 $location.url('/');
+		 }
+		 return $q.reject(rejection);
+      }
+    };
+}).
 
 factory("TypedItemNames", function() {
     var obj = {

@@ -4,6 +4,9 @@
 	    <fieldset class="input-append">
 	        <input type="email" class="form-control" ng-model="login.email" required>
 	        <button type="submit" class="form-control btn btn-primary">Login</button>
+	      	<div class="alert alert-danger" role="alert" ng-show="login.error != null">
+	            Der findes ikke en bruger med emailen {{login.email}}.
+	        </div>
 	    </fieldset>
 	</form>
 	<a ng-href="#/createuser">Opret bruger</a>

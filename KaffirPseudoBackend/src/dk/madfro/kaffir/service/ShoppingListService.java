@@ -1,4 +1,4 @@
-package dk.madfro.kaffir;
+package dk.madfro.kaffir.service;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import dk.madfro.kaffir.app.ShoppingListFacade;
 import dk.madfro.kaffir.model.Item;
 import dk.madfro.kaffir.model.ShoppingList;
 import dk.madfro.kaffir.model.User;
+import dk.madfro.kaffir.util.UserSession;
 
 @Path("shoppinglist")
 public class ShoppingListService {
@@ -25,21 +26,21 @@ public class ShoppingListService {
     @Path("lists")
     @Produces("application/json")
     public List<ShoppingList> retrieveShoppingLists() {
-    	return ShoppingListFacade.instance().getShoppingLists(UserSession.getCurrentUser());
+    	return ShoppingListFacade.instance().getShoppingLists(UserSession.getUser());
     }
     
     @GET
     @Path("/list/{id}")
     @Produces("application/json")
     public ShoppingList retrieveShoppingList(@PathParam("id") String listID) {
-    	return ShoppingListFacade.instance().getShoppingListByID(UserSession.getCurrentUser(), listID);
+    	return ShoppingListFacade.instance().getShoppingListByID(UserSession.getUser(), listID);
     }
     
     @POST
     @Path("/list/additem")
     @Consumes(MediaType.APPLICATION_JSON)
     public void addItem(AddItemInput input) {
-    	ShoppingList list = ShoppingListFacade.instance().getShoppingListByID(UserSession.getCurrentUser(), input.listID);
+    	ShoppingList list = ShoppingListFacade.instance().getShoppingListByID(UserSession.getUser(), input.listID);
     	list.addItem(new Item(input.item, ""));
     }
     
@@ -47,7 +48,7 @@ public class ShoppingListService {
     @Path("/list/removeitem")
     @Consumes(MediaType.APPLICATION_JSON)
     public void removeItem(RemoveItemInput input) {
-    	ShoppingList list = ShoppingListFacade.instance().getShoppingListByID(UserSession.getCurrentUser(), input.listID);
+    	ShoppingList list = ShoppingListFacade.instance().getShoppingListByID(UserSession.getUser(), input.listID);
     	list.removeItem(Item.createFromID(input.itemID));
     }
     

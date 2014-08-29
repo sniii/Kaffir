@@ -1,4 +1,4 @@
-package dk.madfro.kaffir;
+package dk.madfro.kaffir.service;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -11,6 +11,7 @@ import dk.madfro.kaffir.app.ShoppingListFacade;
 import dk.madfro.kaffir.app.UsernameAlreadyExistsException;
 import dk.madfro.kaffir.model.Token;
 import dk.madfro.kaffir.model.User;
+import dk.madfro.kaffir.util.UserSession;
 
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -27,7 +28,7 @@ public class LoginService {
     	LoginResponse response = new LoginResponse();
     	if (application.userExists(credentials.email)) {
     		User user = application.getUser(credentials.email);
-    		Token token = UserSession.storeAuthenticatedUser(user);
+    		Token token = UserSession.login(user);
     		response = new LoginResponse(LoginStatus.Ok, user, token.getSecretKey());
     		System.out.println("User (" + credentials.email + ") logged in.");
     	} else {
@@ -43,7 +44,7 @@ public class LoginService {
 		LoginResponse response = new LoginResponse();
 		try {
 			User newUser = application.createUser(user.email, user.username);
-			Token token = UserSession.storeAuthenticatedUser(newUser);
+			Token token = UserSession.login(newUser);
 			response = new LoginResponse(LoginStatus.Ok, newUser, token.getSecretKey());
 		} catch (UsernameAlreadyExistsException e) {
 			response.status = LoginStatus.UserAlreadyExists;

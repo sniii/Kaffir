@@ -1,11 +1,11 @@
 angular.module('login', [
-	'model.User', 
-	'auth',
+    'auth',
 	'ngCookies'
 ]).
 
-controller('LoginController', ['$http', '$location', '$cookieStore', 'User', 'Authorization', function ($http, $location, $cookieStore, User, Authorization) {
-    this.email = '';
+controller('LoginController', ['$http', '$location', '$cookieStore', 'authorization' ,'kaffirAPI', function ($http, $location, $cookieStore, authorization, kaffirAPI) {
+	this.error = null;
+	this.email = '';
     
     this.login = function () {
     	var self = this;
@@ -16,31 +16,18 @@ controller('LoginController', ['$http', '$location', '$cookieStore', 'User', 'Au
     	};
         	
     	var storeTokenAndChangePage = function(data) {
-    		var token = data.token;
-    		$cookieStore.put('token', token);
-    		self._initAPI(token);
-    		$location.path('shoppinglist-overview');
-    	};
-    	
-    	var showAuthorizationError = function(data) {
-    		alert("Error logging in, invalid credentials!");
-    	};
-    	
-    	Authorization.login(credentials).success(storeTokenAndChangePage).error(showAuthorizationError);
-    	
-    	/*$http.post('/KaffirPseudoBackend/login', loginCredentials).success(function(data) {
     		if (data.status === "Ok") {
-    			User.email = data.user.email;
-    			User.username = data.user.username;
-    			// TODO password??
-    			$location.path("shoppinglist-overview");
+    			kaffirAPI.init(data.token);
+    			$location.path('shoppinglist-overview');
+    		} else {
+    			self.error = true;
     		}
-        });*/
-    };
-    
-
-    
-    this._initAPI = function(token) {
-    	$http.defaults.headers.common['kaffir-token'] = token || $cookies.token;
+    	};
+    	
+    	var showError = function(data) {
+    		alert("Error logging in, server might be inaccessible.");
+    	};
+    	
+    	authorization.login(credentials).success(storeTokenAndChangePage).error(showError);
     };
 }]);

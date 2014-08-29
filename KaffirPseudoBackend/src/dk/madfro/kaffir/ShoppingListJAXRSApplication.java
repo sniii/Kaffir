@@ -8,6 +8,8 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import dk.madfro.kaffir.app.ShoppingListFacade;
+import dk.madfro.kaffir.filter.CleanupFilter;
+import dk.madfro.kaffir.filter.UserFilter;
 
 @ApplicationPath("/*")
 @WebListener
@@ -17,10 +19,12 @@ public class ShoppingListJAXRSApplication extends ResourceConfig implements Serv
 		packages("dk.madfro.kaffir");
 		//register(new LoggingFilter(Logger.getLogger(ShoppingListJAXRSApplication.class.getName()), true));
 		register(UserFilter.class);
+		register(CleanupFilter.class);
 	}
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		System.out.println("Saving database..");
 		((ShoppingListFacade)ShoppingListFacade.instance()).save();
 	}
 

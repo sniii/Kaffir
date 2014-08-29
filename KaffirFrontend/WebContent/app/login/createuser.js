@@ -1,10 +1,9 @@
 angular.module('createuser', [
-	'model.User',
 	'auth',
 	'ngCookies'
 ]).
 
-controller("CreateUserController", ['$http', '$location', '$cookieStore', 'Authorization', function($http, $location, $cookieStore, Authorization) {
+controller("CreateUserController", ['$http', '$location', '$cookieStore', 'authorization', 'kaffirAPI', function($http, $location, $cookieStore, authorization, kaffirAPI) {
     this.error = null;
     this.email = "";
     this.username = "";
@@ -12,23 +11,24 @@ controller("CreateUserController", ['$http', '$location', '$cookieStore', 'Autho
     this.create = function() {
     	var self = this;
     	
+    	var credentials = {
+    		email: this.email,
+    		password: ''
+    	};
+    	
     	var storeTokenAndChangePage = function(data) {
-    		var token = data.token;
-    		$cookieStore.put('token', token);
-    		self._initAPI(token);
-    		$location.path('shoppinglist-overview');
+    		if (data.status === "Ok") {
+    			kaffirAPI.init(data.token);
+    			$location.path('shoppinglist-overview');
+    		} else {
+    			self.error = true;
+    		}
     	};
     	
-    	var showAuthorizationError = function(data) {
-    		self.error = "User exists!";
+    	var showError = function(data) {
+    		alert("Error logging in, server might be inaccessible.");
     	};
     	
-        $http.post('/KaffirPseudoBackend/createuser', {email: this.email, username: this.username}).
-        	success(storeTokenAndChangePage).
-        	error(showAuthorizationError(data));
-    };
-    
-    this._initAPI = function(token) {
-    	$http.defaults.headers.common['kaffir-token'] = token || $cookies.token;
+    	authorization.createUser(credentials).success(storeTokenAndChangePage).error(showError);
     };
 }]);
