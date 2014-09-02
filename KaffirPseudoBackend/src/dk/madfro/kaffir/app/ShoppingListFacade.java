@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,8 +97,24 @@ public class ShoppingListFacade implements ShoppingListAPI {
 	
 	@Override
 	public void unshareShoppingList(String listID) {
-		// TODO Auto-generated method stub
+		UserDataModel userModel = getUserData();
+		Iterator<ShoppingList> listIterator = userModel.getShoppingLists().iterator();
+		while (listIterator.hasNext()) {
+			ShoppingList list = listIterator.next();
+			if (list.getId().equalsIgnoreCase(listID)) {
+				list.setShared(false);
+			}
+		}
 		
+		for (UserDataModel model : database.values()) {
+			listIterator = model.getSharedShoppingLists().iterator();
+			while (listIterator.hasNext()) {
+				ShoppingList list = listIterator.next();
+				if (list.getId().equalsIgnoreCase(listID)) {
+					listIterator.remove();
+				}
+			}
+		}
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////

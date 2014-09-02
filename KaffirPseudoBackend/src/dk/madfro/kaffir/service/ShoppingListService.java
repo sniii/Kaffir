@@ -50,6 +50,13 @@ public class ShoppingListService {
     }
     
     @POST
+    @Path("/list/unshare")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void unshareShoppingList(ShareListInput input) {
+		ShoppingListFacade.instance().unshareShoppingList(input.listID);
+    }
+    
+    @POST
     @Path("/list/additem")
     @Consumes(MediaType.APPLICATION_JSON)
     public void addItem(AddItemInput input) {

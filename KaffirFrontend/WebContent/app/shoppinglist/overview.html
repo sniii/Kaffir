@@ -2,7 +2,8 @@
     <div class="list-group" ng-repeat="shoppinglist in overview.lists">
         <a href class="list-group-item list" style="position: relative" ng-click="overview.select(shoppinglist)">
             <h4 class="list-group-item-heading">{{shoppinglist.user.username}}'s indkøbsseddel</h4>
-            <button type="button" class="btn btn-default" ng-click="overview.share(shoppinglist, $event)">Share</button>
+            <button type="button" class="btn btn-default" ng-click="overview.share(shoppinglist, $event)" ng-hide="shoppinglist.shared">Share</button>
+            <button type="button" class="btn btn-default" ng-click="overview.unshare(shoppinglist, $event)" ng-show="shoppinglist.shared">Unshare</button>
         </a>
     </div>
     <hr style="border: 0; height: 7px; background-color: gray;" ng-hide="overview.sharedLists.length === 0"/>

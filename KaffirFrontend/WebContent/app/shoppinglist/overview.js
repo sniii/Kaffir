@@ -31,9 +31,24 @@ controller('ShoppingListOverviewController', ['$http', '$location', 'ShoppingLis
     	}).error(function() {
     		alert("Yikes...err'ed!");
     	});
+    	this._preventEventBubbling($event);
+    };
+    
+    this.unshare = function(shoppinglist, $event) {
+    	var data = {listID: shoppinglist.id};
+    	$http.post('/KaffirPseudoBackend/shoppinglist/list/unshare', data).success(function(response) {
+    		alert("List not shared anymore.");
+    		shoppinglist.shared = false;
+    	}).error(function() {
+    		alert("Yikes...err'ed!");
+    	});
+    	this._preventEventBubbling($event);
+    };
+    
+    this._preventEventBubbling = function($event) {
     	$event.preventDefault();
     	$event.stopPropagation();
     	$event.cancelBubble = true;
-        $event.returnValue = false;    	
+        $event.returnValue = false; 
     };
 }]);
