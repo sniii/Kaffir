@@ -9,16 +9,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import dk.madfro.kaffir.model.Token;
-import dk.madfro.kaffir.util.UserSession;
+import dk.madfro.kaffir.security.UserSession;
 
 public class UserFilter implements ContainerRequestFilter {
-
+	
 	@Override
 	public void filter(ContainerRequestContext context) throws IOException {
 		if (isLoginAttempt(context)) {
 			return; // pass through to login routine
 		}
-		
 		UserSession.authenticate(Token.createFrom(context.getHeaderString("kaffir-token")));
 		if (!UserSession.isUserLoggedIn()) {
 			sendUnauthorizedResponse();
@@ -30,7 +29,6 @@ public class UserFilter implements ContainerRequestFilter {
 		if (path.endsWith("/")) {
 			path = path.replace("/", "");
 		}
-		System.out.println(path);
 		if (path.equalsIgnoreCase("login") || path.equalsIgnoreCase("createuser")) {
 			return true; 
 		}
@@ -39,9 +37,9 @@ public class UserFilter implements ContainerRequestFilter {
 	
 	private void sendUnauthorizedResponse() {
 		ResponseBuilder builder = null;
-        String response = "Custom message";
+        String response = "Not authorized to access this service.";
         builder = Response.status(Response.Status.UNAUTHORIZED).entity(response);
         throw new WebApplicationException(builder.build());
 	}
-
+	
 }

@@ -17,6 +17,7 @@ public class ShoppingList implements Serializable {
 	private List<Item> items = new ArrayList<Item>();
 	private String id;
 	private User user;
+	private boolean shared;
 	
 	public ShoppingList() {
 	}
@@ -24,6 +25,7 @@ public class ShoppingList implements Serializable {
 	public ShoppingList(User user) {
 		this.id = UUID.randomUUID().toString();
 		this.user = user;
+		this.shared = false;
 	}
 	
 	public void addItem(Item item) {
@@ -53,4 +55,38 @@ public class ShoppingList implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public boolean isShared() {
+		return shared;
+	}
+
+	public void setShared(boolean shared) {
+		this.shared = shared;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ShoppingList other = (ShoppingList) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+	
 }

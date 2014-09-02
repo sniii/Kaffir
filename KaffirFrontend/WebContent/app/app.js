@@ -10,11 +10,11 @@ angular.module('kaffir', [
 config(function ($routeProvider, $httpProvider) {
 	$httpProvider.interceptors.push('requestTokenInterceptor');
     $routeProvider.
-        when('/',                       {templateUrl: 'app/login/login.html',               controller: 'LoginController'}).
-        when('/shoppinglist/',          {templateUrl: 'app/shoppinglist/shoppinglist.html', controller: 'ShoppingListController'}).
-        when('/shoppinglist-overview/', {templateUrl: 'app/shoppinglist/overview.html',     controller: 'ShoppingListOverviewController'}).
-        when('/createuser/',            {templateUrl: 'app/login/createuser.html',          controller: 'CreateUserController'}).
-        otherwise({redirectTo: '/'});
+        when('/login',                  {templateUrl: 'app/login/login.html'}).
+        when('/shoppinglist/:id',       {templateUrl: 'app/shoppinglist/shoppinglist.html'}).
+        when('/shoppinglist-overview/', {templateUrl: 'app/shoppinglist/overview.html'}).
+        when('/createuser/',            {templateUrl: 'app/login/createuser.html'}).
+        otherwise({redirectTo: '/shoppinglist-overview'});
 }).
 
 run(function (kaffirAPI) {
@@ -30,7 +30,7 @@ factory('requestTokenInterceptor', function($q, $window, $location) {
 
      'responseError': function(rejection) {
 		 if (rejection.status === UNAUTHORIZED) {
-			 $location.url('/');
+			 $location.url('/login');
 		 }
 		 return $q.reject(rejection);
       }

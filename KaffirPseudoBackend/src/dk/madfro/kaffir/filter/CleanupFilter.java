@@ -6,7 +6,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
-import dk.madfro.kaffir.util.UserSession;
+import dk.madfro.kaffir.security.UserSession;
 
 public class CleanupFilter implements ContainerResponseFilter {
 

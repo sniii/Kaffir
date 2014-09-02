@@ -5,21 +5,35 @@ angular.module('shoppinglist-overview', [
 
 controller('ShoppingListOverviewController', ['$http', '$location', 'ShoppingListModel', 'User', function($http, $location, ShoppingListModel, User) {
     this.lists = [];
+    this.sharedLists = [];
 
     this.loadLists = function() {
         var self = this;
-        $http.get('/KaffirPseudoBackend/shoppinglist/lists').success(function(data) {
-            self.lists = ShoppingListModel.lists = data;
+        $http.get('/KaffirPseudoBackend/shoppinglist/lists').success(function(lists) {
+            self.lists = lists.shoppingLists;
+            self.sharedLists = lists.sharedShoppingLists;
         });
     };
 
     this.select = function(shoppinglist) {
-        $http.get('/KaffirPseudoBackend/shoppinglist/list/' + shoppinglist.id, {
-        	params: { userID: User.email }
-        }).success(function(data) {
-            ShoppingListModel.activeList.id = data.id;
-            ShoppingListModel.activeList.items = data.items;
-            $location.path('shoppinglist');
-        });
+    	$location.path('shoppinglist/' + shoppinglist.id);
+    };
+    
+    this.share = function(shoppinglist, $event) {
+    	var user = prompt("Enter email", "");
+    	var data = {targetUserID: user, listID: shoppinglist.id};
+    	$http.post('/KaffirPseudoBackend/shoppinglist/list/share', data).success(function(response) {
+    		if (response.status === "Ok") {
+    			alert("Yay! List shared with " + data.targetUserID);
+    		} else {
+    			alert("Couldn't share list, user " + data.targetUserID + " doesn't exist.");	
+    		}
+    	}).error(function() {
+    		alert("Yikes...err'ed!");
+    	});
+    	$event.preventDefault();
+    	$event.stopPropagation();
+    	$event.cancelBubble = true;
+        $event.returnValue = false;    	
     };
 }]);

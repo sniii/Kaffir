@@ -1,7 +1,7 @@
 <div class="shopping-list" ng-controller="ShoppingListController as list">
     <form>
-    <fieldset class="input-append">
-        <input type="text" class="form-control" ng-model="list.newItemName" placeholder="Indtast vare" ng-keyup="list.addItem($event)">
+    <fieldset class="input-group input-group-lg">
+        <input type="text" class="form-control newitem-input" ng-model="list.newItemName" placeholder="Indtast vare" ng-keyup="list.addItem($event)">
         <div class="suggest">
             <div ng-repeat="name in list.matchingNames">
                 {{name}}
@@ -11,11 +11,12 @@
     </form>
     <table class="table table-bordered table-hover">
         <tr ng-repeat="item in list.items" ng-click="list.removeItem($index)">
-            <td class="shopping-list-item">{{item.name}}</td>
+            <td class="item">{{item.name}}</td>
         </tr>
         <tr ng-hide="list.items.length">
             <td style="height: 300px; width: 300px; vertical-align: middle; text-align: center">Du har ingen varer i din indkøbskurv.</td>
         </tr>
     </table>
-    <a class="btn btn-primary" href="#/">Log ud</a>
+    <a class="btn btn-primary" ng-href="#/">Mine indkøbssedler</a>
+    <a class="btn btn-primary" ng-click="list.logout()" style="float: right;">Log ud</a>
 </div>
