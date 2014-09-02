@@ -8,18 +8,15 @@ import javax.ws.rs.core.MediaType;
 
 import dk.madfro.kaffir.app.ShoppingListAPI;
 import dk.madfro.kaffir.app.ShoppingListFacade;
-import dk.madfro.kaffir.app.UsernameAlreadyExistsException;
+import dk.madfro.kaffir.exception.UsernameAlreadyExistsException;
 import dk.madfro.kaffir.model.Token;
 import dk.madfro.kaffir.model.User;
-import dk.madfro.kaffir.util.UserSession;
+import dk.madfro.kaffir.security.UserSession;
 
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class LoginService {
-	public enum LoginStatus {
-		Ok, UserNotFound, UserAlreadyExists
-	}
 	
 	@POST
 	@Path("login")
@@ -50,6 +47,10 @@ public class LoginService {
 			response.status = LoginStatus.UserAlreadyExists;
 		}
 		return response;
+	}
+	
+	public enum LoginStatus {
+		Ok, UserNotFound, UserAlreadyExists
 	}
 	
 	@SuppressWarnings("unused")

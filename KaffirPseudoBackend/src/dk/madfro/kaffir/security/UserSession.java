@@ -1,4 +1,4 @@
-package dk.madfro.kaffir.util;
+package dk.madfro.kaffir.security;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class UserSession {
 	public static void authenticate(Token token) {
 		if (token == null) {
 			return;
-		}
+		}		
 		User user = users.get(token);
 		if (user != null) {
 			currentUser.set(user);

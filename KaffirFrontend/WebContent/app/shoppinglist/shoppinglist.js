@@ -1,13 +1,21 @@
 angular.module('shoppinglist', [
-	'model.ShoppingList',
-	'model.User'
+    'auth'
 ]).
 
-controller("ShoppingListController", ['$http', 'ShoppingListModel', 'User', function($http, ShoppingListModel, User) {
-	
-    this.items = ShoppingListModel.activeList.items;
+controller("ShoppingListController", function($http, $routeParams, $location, kaffirAPI) {
+	this.shoppingList = null;
+    this.items = [];
     this.newItemName = "";
     this.matchingNames = [];
+    
+    this.loadShoppingList = function() {
+    	var self = this;
+    	var id = $routeParams.id;
+    	$http.get('/KaffirPseudoBackend/shoppinglist/list/' + id).success(function(list) {
+    		self.shoppingList = list;
+    		self.items = list.items;
+    	});
+    }
 
     this.addItem = function(event) {
       if (this._isEnter(event)) {
@@ -19,8 +27,11 @@ controller("ShoppingListController", ['$http', 'ShoppingListModel', 'User', func
     
     this._addItemOnServer = function() {
     	var self = this;
+    	if (this.newItemName.length === 0) {
+    		return;
+    	}
         $http.post("/KaffirPseudoBackend/shoppinglist/list/additem", {
-        	listID: ShoppingListModel.activeList.id, item: self.newItemName
+        	listID: self.shoppingList.id, itemName: self.newItemName
         }).success(function(data) {
         	self.items.push({name: self.newItemName, category: "?"});
             //TypedItemNames.add(self.newItemName);
@@ -36,9 +47,16 @@ controller("ShoppingListController", ['$http', 'ShoppingListModel', 'User', func
         var item = this.items[itemIndex]; //this.items.splice(item, 1);
         var self = this;
         $http.post("/KaffirPseudoBackend/shoppinglist/list/removeitem", {
-        	listID: ShoppingListModel.activeList.id, itemID: item.id
+        	listID: self.shoppingList.id, itemID: item.id
         }).success(function(data) {
         	self.items.splice(itemIndex, 1);
         });
     };
-}]);
+    
+    this.logout = function() {
+    	kaffirAPI.logout();
+    	$location.path('/login');
+    };
+    
+    this.loadShoppingList();
+});

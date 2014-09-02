@@ -19,6 +19,10 @@ public class User implements Serializable {
 		this.username = username;
 		this.email = email;
 	}
+	
+	public static User createFrom(String userID) {
+		return new User("", userID);
+	}
 
 	public String getUsername() {
 		return username;

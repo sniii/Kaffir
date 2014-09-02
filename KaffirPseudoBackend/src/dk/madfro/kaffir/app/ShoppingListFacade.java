@@ -9,11 +9,15 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import dk.madfro.kaffir.exception.UserNotExistingException;
+import dk.madfro.kaffir.exception.UsernameAlreadyExistsException;
 import dk.madfro.kaffir.model.Item;
 import dk.madfro.kaffir.model.ShoppingList;
 import dk.madfro.kaffir.model.User;
 import dk.madfro.kaffir.model.UserDataModel;
+import dk.madfro.kaffir.security.UserSession;
 
 public class ShoppingListFacade implements ShoppingListAPI {
 	private static class InstanceHolder {
@@ -34,19 +38,18 @@ public class ShoppingListFacade implements ShoppingListAPI {
 	}
 	
 	@Override
-	public List<ShoppingList> getShoppingLists(User user) {
-		return database.get(user).getLists();
+	public List<ShoppingList> getShoppingLists() {
+		return getUserData().getShoppingLists();
 	}
 	
 	@Override
-	public ShoppingList getShoppingListByID(User user, String listID) {
-		UserDataModel model = database.get(user);
-		for (ShoppingList list : model.getLists()) {
-			if (list.getId().equalsIgnoreCase(listID)) {
-				return list;
-			}
+	public ShoppingList getShoppingListByID(String listID) {
+		UserDataModel model = getUserData();
+		ShoppingList list = model.getShoppingListByID(listID);
+		if (list == null) {
+			list = model.getSharedShoppingListByID(listID);
 		}
-		return null;
+		return list;
 	}
 	
 	@Override
@@ -64,21 +67,56 @@ public class ShoppingListFacade implements ShoppingListAPI {
 		return null;
 	}
 	
+	@Override
 	public User createUser(String userID, String username) throws UsernameAlreadyExistsException {
 		if (userExists(userID)) {
 			throw new UsernameAlreadyExistsException();
 		}
 		User user = new User(username, userID);
 		UserDataModel model = new UserDataModel();
-		model.addList(new ShoppingList(user));
+		model.addShoppingList(new ShoppingList(user));
 		database.put(user, model);
 		return user;
 	}
 	
-	private UserDataModel getDataForUser(String userID) {
-		return database.get(new User("", userID));
+	@Override
+	public Set<ShoppingList> getSharedShoppingLists() {
+		UserDataModel model = getUserData();
+		return model.getSharedShoppingLists();
 	}
 	
+	@Override
+	public void shareShoppingList(String targetUserID, String listID) throws UserNotExistingException  {
+		UserDataModel currentUser = getUserData();
+		UserDataModel targetUser = getUserData(targetUserID);
+		ShoppingList sharedList = currentUser.getShoppingListByID(listID);
+		sharedList.setShared(true);
+		targetUser.addSharedShoppingList(sharedList);
+	}
+	
+	@Override
+	public void unshareShoppingList(String listID) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public UserDataModel getUserData() {
+		return database.get(UserSession.getUser());
+	}
+	
+	private UserDataModel getUserData(String userID) throws UserNotExistingException {
+		UserDataModel model = database.get(User.createFrom(userID));
+		if (model == null) {
+			throw new UserNotExistingException();
+		}
+		return model;
+	}
+
 	@SuppressWarnings("unchecked")
 	private void load() {
 		File file = new File(databasePath);
@@ -120,12 +158,7 @@ public class ShoppingListFacade implements ShoppingListAPI {
 		shoppinglist.addItem(new Item("Bananer", "Frugt"));
 		shoppinglist.addItem(new Item("Vandmelon", "Frugt"));
 		shoppinglist.addItem(new Item("Adidas sneakers", "Tøj og sko"));
-		model.addList(shoppinglist);
-		shoppinglist = new ShoppingList(user);
-		shoppinglist.addItem(new Item("Item 1", "Lala"));
-		shoppinglist.addItem(new Item("Item 2", "Lulu"));
-		shoppinglist.addItem(new Item("Item 3", "Tøj og sko"));
-		model.addList(shoppinglist);
+		model.addShoppingList(shoppinglist);
 		database.put(user, model);
 		
 		user = new User("Kimia", "kimiafrost@gmail.com");
@@ -133,7 +166,7 @@ public class ShoppingListFacade implements ShoppingListAPI {
 		shoppinglist = new ShoppingList(user);
 		shoppinglist.addItem(new Item("Marlboro Light", "Cigaretter"));
 		shoppinglist.addItem(new Item("Æbler", "Frugt"));
-		model.addList(shoppinglist);
+		model.addShoppingList(shoppinglist);
 		database.put(user, model);
 		
 		user = new User("Mads", "mdiget@gmail.com");
@@ -143,7 +176,8 @@ public class ShoppingListFacade implements ShoppingListAPI {
 		shoppinglist.addItem(new Item("Pærer", "Frugt"));
 		shoppinglist.addItem(new Item("Sko", "Tøj og sko"));
 		shoppinglist.addItem(new Item("Bacon", "Pålæg"));
-		model.addList(shoppinglist);
+		model.addShoppingList(shoppinglist);
 		database.put(user, model);
 	}
+
 }
